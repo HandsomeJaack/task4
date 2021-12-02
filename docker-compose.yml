@@ -1,0 +1,27 @@
+version: '3'
+services:
+    db:
+      image: mysql:5.7
+      container_name: db
+      command: --max_allowed_packet=32505856 --wait-timeout=480 # set max packet size to 256M and increase timeout
+      environment:
+        MYSQL_ROOT_PASSWORD: admin
+        MYSQL_DATABASE: dostavim
+      volumes:
+        - ./task6/scripts:/docker-entrypoint-initdb.d/
+      ports:
+        - 3306:3306
+    spring-boot-app:
+      depends_on:
+        - db
+      image: spring-boot-image
+      container_name: spring-boot-app
+      build:
+        context: ./
+        dockerfile: Dockerfile-java
+      environment:
+        WAIT_HOSTS: db:3306
+      ports:
+        - 8080:8080
+
+  
